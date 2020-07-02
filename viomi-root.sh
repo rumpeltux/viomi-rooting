@@ -17,20 +17,24 @@ EOT
   echo "We'll now try to connect to the ADB shell. Please connect the USB cable to your computer."
   echo "If you hear the Robot voice ('kaichi'), wait another two seconds and unplug and reconnect the cable."
   fix_adb_shell
+  echo "Shell fixed..."
   persist_adb_shell
 
   echo "Please replug the USB cable one more time. Do not unplug once you hear the sound."
   wait_for_adb_shell
+  echo "Shell is present."
   
   # TODO: wait for robot to connect to wifi
   ip=$(get_robot_ip)
-  install_dropbear
+  echo "IP is $ip"
+  install_dropbear "$ip"
 
   echo "SSH was installed."
   echo 'Please change the root password now. The default one is typically "@3I#sc$RD%xm^2S&".'
   ssh vacuum "passwd"
 
-  restore_robot_services
+  echo "Restoring robot services."
+  restore_robot_services "$ip"
 
   read -p "Would you like to install Valetudo (open-source cloudless vacuum robot UI)? (y/n) " -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]
