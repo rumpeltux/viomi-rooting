@@ -22,6 +22,7 @@ EOT
   echo "Please replug the USB cable one more time. Do not unplug once you hear the sound."
   wait_for_adb_shell
   
+  # TODO: wait for robot to connect to wifi
   ip=$(get_robot_ip)
   install_dropbear
 
