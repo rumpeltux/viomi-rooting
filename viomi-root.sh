@@ -45,7 +45,7 @@ EOT
 }
 
 function fix_adb_shell() {
-  cat >adb_shell <<EOF
+  cat >adb_shell <<"EOF"
 #!/bin/sh
 export ENV='/etc/adb_profile'
 exec /bin/sh $@
