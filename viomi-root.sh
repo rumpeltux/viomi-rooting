@@ -4,7 +4,7 @@ function main() {
   # TODO check prerequisites: .ssh directory with id_rsa.pub file, sha256sum, ssh
   
   # TODO attempt to continue where we left off in case of failures
-  echo <<EOT
+  cat <<EOT
 Starting viomi rooting procedure. Please make sure of the following before starting:
 1. Your robot connects to your wifi when booted and your computer is connected to the same network.
 2. It is powered off
@@ -35,7 +35,7 @@ EOT
   ssh vacuum "passwd"
 
   echo "Restoring robot services."
-  restore_robot_services "$ip"
+  restore_robot_services
 
   read -p "Would you like to install Valetudo (open-source cloudless vacuum robot UI)? (y/n) " -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -70,16 +70,18 @@ function wait_for_adb_shell() {
 }
 
 function install_dropbear() {
-  ip=$(shift)
-  wget https://itooktheredpill.irgendwo.org/static/2020/dropbear_2015.71-2_sunxi.ipk
-  echo "6d21911b91505fd781dc2c2ad1920dfbb72132d7adb614cc5d2fb1cc5e29c8de  dropbear_2015.71-2_sunxi.ipk" dropbear.sha256
-  sha256 -c dropbear.sha256 || exit
-  adb push dropbear_2015.71-2_sunxi.ipk /tmp
-  adb shell opkg install /tmp/dropbear_2015.71-2_sunxi.ipk
+  ip=$1
+  filename=dropbear_2015.71-2_sunxi.ipk
+  wget "https://itooktheredpill.irgendwo.org/static/2020/$filename" -O $filename
+  echo "6d21911b91505fd781dc2c2ad1920dfbb72132d7adb614cc5d2fb1cc5e29c8de  $filename" > dropbear.sha256
+  sha256sum -c dropbear.sha256 || exit
+  adb push $filename /tmp
+  adb shell opkg install /tmp/$filename
   adb push ~/.ssh/id_rsa.pub /etc/dropbear/authorized_keys
   adb shell chmod 0600 /etc/dropbear/authorized_keys
-  adb shell sed -i "/PasswordAuth/ s/'on'/'off'/" /etc/config/dropbear
+  adb shell "sed -i \"/PasswordAuth/ s/'on'/'off'/\" /etc/config/dropbear"
   adb shell /etc/init.d/dropbear start
+  echo "Setting local ssh alias vacuum to root@$ip.  Use 'ssh vacuum'"
   cat >> ~/.ssh/config <<EOF
 Host vacuum
   Hostname $ip
@@ -95,10 +97,9 @@ function restore_robot_services() {
 }
 
 function install_valetudo() {
-  ip=$(shift)
   wget https://github.com/Hypfer/Valetudo/releases/download/0.5.3/valetudo
   echo "da67cee5eca1c8c55eb891bfe7c050639f8658dd9096ac66a20ec1061763b29b  valetudo" > valetudo.sha256
-  sha256 -c valetudo.sha256 || exit
+  sha256sum -c valetudo.sha256 || exit
   scp valetudo vacuum:/mnt/UDISK/
   ssh vacuum "cat >/etc/init.d/valetudo" <<EOF
 #!/bin/sh /etc/rc.common
@@ -110,35 +111,41 @@ PROG=/mnt/UDISK/valetudo
 OOM_ADJ=-17
 
 start_service() {
-	
-	procd_open_instance
-	procd_set_param oom_adj $OOM_ADJ
-	procd_set_param command $PROG
-	procd_set_param stdout 1 # forward stdout of the command to logd
-	procd_set_param stderr 1 # same for stderr
-	procd_close_instance
+  procd_open_instance
+  procd_set_param oom_adj $OOM_ADJ
+  procd_set_param command $PROG
+  procd_set_param stdout 1 # forward stdout of the command to logd
+  procd_set_param stderr 1 # same for stderr
+  procd_close_instance
 }
 
 shutdown() {
-	echo shutdown
+  echo shutdown
 }
 EOF
   ssh vacuum "cat >/etc/rc.d/S51valetudo" <<EOF
 #!/bin/sh
 iptables         -F OUTPUT
 iptables  -t nat -F OUTPUT
-dest=192.168.1.10  # enter your local development host here
+dest=192.168.1.2  # enter your local development host here
 for host in 110.43.0.83 110.43.0.85; do
   iptables  -t nat -A OUTPUT -p tcp --dport 80   -d $host -j DNAT --to-destination $dest:8080
   iptables  -t nat -A OUTPUT -p udp --dport 8053 -d $host -j DNAT --to-destination $dest:8053
   iptables         -A OUTPUT                     -d $host/32  -j REJECT
 done
 EOF
-  ssh vacuum "echo '110.43.0.83 ot.io.mi.com ott.io.mi.com' >> /etc/hosts; chmod +x /etc/rc.d/S51valetudo /etc/init.d/valetudo; cd /etc/rc.d/; ln -s ../init.d/valetudo S97valetudo"
+  ssh vacuum '\
+    for domain in "" de. ea. in. pv. ru. sg. st. tw. us.; \
+    do \
+      echo "110.43.0.83 ${domain}ot.io.mi.com ${domain}ott.io.mi.com" >> /etc/hosts; \
+    done; \
+    chmod +x /etc/rc.d/S51valetudo /etc/init.d/valetudo; \
+    cd /etc/rc.d/; \
+    ln -s ../init.d/valetudo S97valetudo'
 }
 
 function get_robot_ip() {
-  adb shell "ifconfig wlan0 | awk '/inet addr/{print substr($2,6)}'"
+  adb shell ifconfig wlan0 | awk '/inet addr/{print substr($2,6)}'
 }
 
 mkdir -p /tmp/viomi-root
