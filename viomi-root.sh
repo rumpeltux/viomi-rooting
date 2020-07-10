@@ -16,11 +16,12 @@ EOT
 
   echo "We'll now try to connect to the ADB shell. Please connect the USB cable to your computer."
   echo "If you hear the Robot voice ('kaichi'), wait another two seconds and unplug and reconnect the cable."
+  echo "If nothing happens try replugging the USB cable. This may take 10 or more attempts."
   fix_adb_shell
   echo "Shell fixed..."
   persist_adb_shell
 
-  echo "Please replug the USB cable one more time. Do not unplug once you hear the sound."
+  echo "Please replug the USB cable again. Do not unplug once you hear the sound."
   wait_for_adb_shell
   echo "Shell is present."
   
@@ -95,8 +96,8 @@ function restore_robot_services() {
 
 function install_valetudo() {
   ip=$(shift)
-  wget -O - https://github.com/rumpeltux/Valetudo/releases/download/0.4.1/valetudo.gz | gzip -d > valetudo
-  echo "a6abc163b3f553926bcd7a211d46ed606bdb1ea2bcd4ae58627f8767c8c866b5  valetudo" > valetudo.sha256
+  wget https://github.com/Hypfer/Valetudo/releases/download/0.5.3/valetudo
+  echo "da67cee5eca1c8c55eb891bfe7c050639f8658dd9096ac66a20ec1061763b29b  valetudo" > valetudo.sha256
   sha256 -c valetudo.sha256 || exit
   scp valetudo vacuum:/mnt/UDISK/
   ssh vacuum "cat >/etc/init.d/valetudo" <<EOF
