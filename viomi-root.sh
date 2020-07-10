@@ -112,8 +112,8 @@ OOM_ADJ=-17
 
 start_service() {
   procd_open_instance
-  procd_set_param oom_adj $OOM_ADJ
-  procd_set_param command $PROG
+  procd_set_param oom_adj \$OOM_ADJ
+  procd_set_param command \$PROG
   procd_set_param stdout 1 # forward stdout of the command to logd
   procd_set_param stderr 1 # same for stderr
   procd_close_instance
@@ -129,9 +129,9 @@ iptables         -F OUTPUT
 iptables  -t nat -F OUTPUT
 dest=192.168.1.2  # enter your local development host here
 for host in 110.43.0.83 110.43.0.85; do
-  iptables  -t nat -A OUTPUT -p tcp --dport 80   -d $host -j DNAT --to-destination $dest:8080
-  iptables  -t nat -A OUTPUT -p udp --dport 8053 -d $host -j DNAT --to-destination $dest:8053
-  iptables         -A OUTPUT                     -d $host/32  -j REJECT
+  iptables  -t nat -A OUTPUT -p tcp --dport 80   -d \$host -j DNAT --to-destination \$dest:8080
+  iptables  -t nat -A OUTPUT -p udp --dport 8053 -d \$host -j DNAT --to-destination \$dest:8053
+  iptables         -A OUTPUT                     -d \$host/32  -j REJECT
 done
 EOF
   ssh vacuum '\
