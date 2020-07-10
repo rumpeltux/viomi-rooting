@@ -70,7 +70,7 @@ function wait_for_adb_shell() {
 }
 
 function install_dropbear() {
-  ip=$(shift)
+  ip=$1
   wget https://itooktheredpill.irgendwo.org/static/2020/dropbear_2015.71-2_sunxi.ipk
   echo "6d21911b91505fd781dc2c2ad1920dfbb72132d7adb614cc5d2fb1cc5e29c8de  dropbear_2015.71-2_sunxi.ipk" dropbear.sha256
   sha256 -c dropbear.sha256 || exit
@@ -80,6 +80,7 @@ function install_dropbear() {
   adb shell chmod 0600 /etc/dropbear/authorized_keys
   adb shell sed -i "/PasswordAuth/ s/'on'/'off'/" /etc/config/dropbear
   adb shell /etc/init.d/dropbear start
+  echo "Setting local ssh alias vacuum to root@$ip.  Use 'ssh vacuum'"
   cat >> ~/.ssh/config <<EOF
 Host vacuum
   Hostname $ip
@@ -95,7 +96,6 @@ function restore_robot_services() {
 }
 
 function install_valetudo() {
-  ip=$(shift)
   wget https://github.com/Hypfer/Valetudo/releases/download/0.5.3/valetudo
   echo "da67cee5eca1c8c55eb891bfe7c050639f8658dd9096ac66a20ec1061763b29b  valetudo" > valetudo.sha256
   sha256 -c valetudo.sha256 || exit
