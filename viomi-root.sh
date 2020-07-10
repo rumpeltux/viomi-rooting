@@ -48,7 +48,7 @@ function fix_adb_shell() {
   cat >adb_shell <<"EOF"
 #!/bin/sh
 export ENV='/etc/adb_profile'
-exec /bin/sh $@
+exec /bin/sh "$@"
 EOF
   chmod +x adb_shell
   while true; do
