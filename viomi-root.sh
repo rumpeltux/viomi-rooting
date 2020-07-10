@@ -138,7 +138,7 @@ EOF
 }
 
 function get_robot_ip() {
-  adb shell "ifconfig wlan0 | awk '/inet addr/{print substr($2,6)}'"
+  adb shell ifconfig wlan0 | awk '/inet addr/{print substr($2,6)}'
 }
 
 mkdir -p /tmp/viomi-root
