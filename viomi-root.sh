@@ -35,7 +35,7 @@ EOT
   ssh vacuum "passwd"
 
   echo "Restoring robot services."
-  restore_robot_services "$ip"
+  restore_robot_services
 
   read -p "Would you like to install Valetudo (open-source cloudless vacuum robot UI)? (y/n) " -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]
