@@ -4,7 +4,7 @@ function main() {
   # TODO check prerequisites: .ssh directory with id_rsa.pub file, sha256sum, ssh
   
   # TODO attempt to continue where we left off in case of failures
-  echo <<EOT
+  cat <<EOT
 Starting viomi rooting procedure. Please make sure of the following before starting:
 1. Your robot connects to your wifi when booted and your computer is connected to the same network.
 2. It is powered off
