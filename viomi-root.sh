@@ -27,7 +27,7 @@ EOT
   
   # TODO: wait for robot to connect to wifi
   ip=$(get_robot_ip)
-  echo "IP is $ip"
+  echo "Robot IP is $ip"
   install_dropbear "$ip"
 
   echo "SSH was installed."
@@ -42,7 +42,7 @@ EOT
   then
       return
   fi
-  install_valetudo
+  install_valetudo "$ip"
 }
 
 function fix_adb_shell() {
@@ -97,7 +97,8 @@ function restore_robot_services() {
 }
 
 function install_valetudo() {
-  wget https://github.com/Hypfer/Valetudo/releases/download/0.5.3/valetudo
+  ip=$1
+  wget "https://github.com/Hypfer/Valetudo/releases/download/0.5.3/valetudo" -O valetudo
   echo "da67cee5eca1c8c55eb891bfe7c050639f8658dd9096ac66a20ec1061763b29b  valetudo" > valetudo.sha256
   sha256sum -c valetudo.sha256 || exit
   scp valetudo vacuum:/mnt/UDISK/
@@ -127,7 +128,7 @@ EOF
 #!/bin/sh
 iptables         -F OUTPUT
 iptables  -t nat -F OUTPUT
-dest=192.168.1.2  # enter your local development host here
+dest=${ip}  # enter your local development host here
 for host in 110.43.0.83 110.43.0.85; do
   iptables  -t nat -A OUTPUT -p tcp --dport 80   -d \$host -j DNAT --to-destination \$dest:8080
   iptables  -t nat -A OUTPUT -p udp --dport 8053 -d \$host -j DNAT --to-destination \$dest:8053
