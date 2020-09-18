@@ -1,7 +1,12 @@
 #!/bin/bash
 
 function main() {
-  # TODO check prerequisites: .ssh directory with id_rsa.pub file, sha256sum, ssh
+  [ -d "$HOME/.ssh" ] || (echo "~/.ssh does not exist, trying to create it."; mkdir -p "$HOME/.ssh" || exit)
+  echo -n > "$HOME/.ssh/config" || (echo "Cannot edit ~/.ssh/config."; exit)
+  [ -e "$HOME/.ssh/id_rsa.pub" ] || (echo "You don't seem to have an ssh key, generating one."; ssh-keygen || exit)
+  for tool in sha256sum ssh; do
+    which $tool > /dev/null || (echo "Please install $tool."; exit)
+  done
   
   # TODO attempt to continue where we left off in case of failures
   cat <<EOT
@@ -82,7 +87,7 @@ function install_dropbear() {
   adb shell "sed -i \"/PasswordAuth/ s/'on'/'off'/\" /etc/config/dropbear"
   adb shell /etc/init.d/dropbear start
   echo "Setting local ssh alias vacuum to root@$ip.  Use 'ssh vacuum'"
-  cat >> ~/.ssh/config <<EOF
+  cat >> "$HOME/.ssh/config" <<EOF
 Host vacuum
   Hostname $ip
   User root
