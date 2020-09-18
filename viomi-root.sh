@@ -128,9 +128,11 @@ EOF
 #!/bin/sh
 iptables         -F OUTPUT
 iptables  -t nat -F OUTPUT
-dest=${ip}  # enter your local development host here
+# for local development enter your local development host here
+# and change \$dest:80 to \$dest:8080
+dest=127.0.0.1
 for host in 110.43.0.83 110.43.0.85; do
-  iptables  -t nat -A OUTPUT -p tcp --dport 80   -d \$host -j DNAT --to-destination \$dest:8080
+  iptables  -t nat -A OUTPUT -p tcp --dport 80   -d \$host -j DNAT --to-destination \$dest:80
   iptables  -t nat -A OUTPUT -p udp --dport 8053 -d \$host -j DNAT --to-destination \$dest:8053
   iptables         -A OUTPUT                     -d \$host/32  -j REJECT
 done
