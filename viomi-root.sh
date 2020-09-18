@@ -30,7 +30,13 @@ EOT
   wait_for_adb_shell
   echo "Shell is present."
   
-  # TODO: wait for robot to connect to wifi
+  # TODO: figure out when the robot is connected to wifi
+  echo -n "Waiting a bit to allow the robot to connect to wifi..."
+  for i in $(seq 10); do
+    echo -n '.'; sleep 1;
+  done
+  echo
+
   ip=$(get_robot_ip)
   echo "Robot IP is $ip"
   install_dropbear "$ip"
