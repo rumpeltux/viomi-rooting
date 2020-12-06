@@ -28,3 +28,14 @@ Clone this repository, then run the following command and follow its instruction
 2. Temporarily disable robot services to allow the adb bridge to persist during setup.
 3. Install `dropbear` along with your `~/.ssh/id_rsa.pub` public key
 4. (Optionally:) Install [Valetudo](https://github.com/Hypfer/Valetudo).
+
+## Troubleshooting
+
+**Problem:** The script was not able to establish a ssh connection and didn't finish.
+
+Solution: Rerun the remaining steps of the script (replace `ROBOT_IP` with the actual ip address)
+
+    ./viomi-root.sh change_password
+    ./viomi-root.sh restore_robot_services
+    ./viomi-root.sh install_valutodo ROBOT_IP
+   

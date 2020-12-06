@@ -40,8 +40,11 @@ EOT
   ip=$(get_robot_ip)
   echo "Robot IP is $ip"
   install_dropbear "$ip"
-
   echo "SSH was installed."
+  
+  # Give dropbear a bit time to start, before we try to connect in the next step.
+  sleep 2
+
   echo 'Please change the root password now. The default one is typically "@3I#sc$RD%xm^2S&".'
   ssh vacuum "passwd"
 
@@ -92,7 +95,8 @@ function install_dropbear() {
   adb shell chmod 0600 /etc/dropbear/authorized_keys
   adb shell "sed -i \"/PasswordAuth/ s/'on'/'off'/\" /etc/config/dropbear"
   adb shell /etc/init.d/dropbear start
-  echo "Setting local ssh alias vacuum to root@$ip.  Use 'ssh vacuum'"
+  echo "Setting local ssh alias vacuum to root@$ip."
+  echo "You can use 'ssh vacuum' to connect to the robot from now on."
   cat >> "$HOME/.ssh/config" <<EOF
 Host vacuum
   Hostname $ip
@@ -165,4 +169,5 @@ function get_robot_ip() {
 
 mkdir -p /tmp/viomi-root
 pushd /tmp/viomi-root
-main
+
+[ -z "$1" ] && main || $@
