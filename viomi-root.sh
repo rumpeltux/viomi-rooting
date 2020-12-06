@@ -2,7 +2,7 @@
 
 function main() {
   [ -d "$HOME/.ssh" ] || (echo "~/.ssh does not exist, trying to create it."; mkdir -p "$HOME/.ssh" || exit)
-  echo -n > "$HOME/.ssh/config" || (echo "Cannot edit ~/.ssh/config."; exit)
+  echo -n >> "$HOME/.ssh/config" || (echo "Cannot edit ~/.ssh/config."; exit)
   [ -e "$HOME/.ssh/id_rsa.pub" ] || (echo "You don't seem to have an ssh key, generating one."; ssh-keygen || exit)
   for tool in sha256sum ssh; do
     which $tool > /dev/null || (echo "Please install $tool."; exit)
