@@ -37,7 +37,7 @@ Solution: Rerun the remaining steps of the script (replace `ROBOT_IP` with the a
 
     ./viomi-root.sh change_password
     ./viomi-root.sh restore_robot_services
-    ./viomi-root.sh install_valutodo ROBOT_IP
+    ./viomi-root.sh install_valetudo ROBOT_IP
 
 **Problem:** An old Valetudo version is installed that doesn't support viomi.vacuum.v8 yet.
 
