@@ -42,6 +42,6 @@ Solution: Rerun the remaining steps of the script (replace `ROBOT_IP` with the a
 **Problem:** An old Valetudo version is installed that doesn't support viomi.vacuum.v8 yet.
 
 Solution: Manually update your installed version by
-[uninstalling](https://valetudo.cloud/pages/installation/viomi.html#uninstall-valetudo) and
+[uninstalling](https://github.com/Hypfer/Valetudo/blob/0.5.3/docs/_pages/installation/viomi.md#uninstall-valetudo) and
 then [reinstalling](https://valetudo.cloud/pages/installation/viomi.html#robot-setup).
 See also https://github.com/rumpeltux/viomi-rooting/issues/11
