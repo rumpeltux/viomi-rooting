@@ -6,7 +6,7 @@ This tool aims to automate the rooting process described in
 It is known to work with the following models:
 
 * Mijia STYJ02YM (viomi-v7)
-* Mijia STYTJ02YM (viomi-v8) (experimental, needs manual update of Valetudo)
+* Mijia STYTJ02YM (viomi-v8) (not tried yet)
 
 ## Prerequisites
 
@@ -38,10 +38,3 @@ Solution: Rerun the remaining steps of the script (replace `ROBOT_IP` with the a
     ./viomi-root.sh change_password
     ./viomi-root.sh restore_robot_services
     ./viomi-root.sh install_valetudo ROBOT_IP
-
-**Problem:** An old Valetudo version is installed that doesn't support viomi.vacuum.v8 yet.
-
-Solution: Manually update your installed version by
-[uninstalling](https://github.com/Hypfer/Valetudo/blob/0.5.3/docs/_pages/installation/viomi.md#uninstall-valetudo) and
-then [reinstalling](https://valetudo.cloud/pages/installation/viomi.html#robot-setup).
-See also https://github.com/rumpeltux/viomi-rooting/issues/11
