@@ -113,9 +113,9 @@ function restore_robot_services() {
 
 function install_valetudo() {
   ip=$1
-  wget "https://github.com/Hypfer/Valetudo/releases/download/2021.01.1/valetudo" -O valetudo
+  wget "https://github.com/Hypfer/Valetudo/releases/download/2021.02.0/valetudo" -O valetudo
   chmod +x valetudo
-  echo "4a43181e2ec928ca7e504fee5469220e65eb5efb353dddbd280965d262fbad05  valetudo" > valetudo.sha256
+  echo "8558a77bba694fed81c1c4be9efc5202e25ec773e96535489ef9d3ffad38f19a  valetudo" > valetudo.sha256
   sha256sum -c valetudo.sha256 || exit
   scp valetudo vacuum:/mnt/UDISK/
   ssh vacuum "cat >/etc/init.d/valetudo" <<EOF
