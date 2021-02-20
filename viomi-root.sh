@@ -86,7 +86,7 @@ function wait_for_adb_shell() {
 function install_dropbear() {
   ip=$1
   filename=dropbear_2015.71-2_sunxi.ipk
-  wget "https://itooktheredpill.irgendwo.org/static/2020/$filename" -O $filename
+  wget "https://github.com/esix4rmyy/dropbear-viomi-mirror/releases/download/2015.71-2/dropbear_2015.71-2.ipk" -O $filename
   echo "6d21911b91505fd781dc2c2ad1920dfbb72132d7adb614cc5d2fb1cc5e29c8de  $filename" > dropbear.sha256
   sha256sum -c dropbear.sha256 || exit
   adb push $filename /tmp
