@@ -31,6 +31,24 @@ Clone this repository, then run the following command and follow its instruction
 
 ## Troubleshooting
 
+**Problem:** No adb connection is established.
+
+* Check that adb and your cable is working in general by connecting to an android phone
+  (enable usb debugging on it), e.g. by using adb shell.
+* Check the `dmesg` output to see if your computer ever recognized a USB devices.
+  Some machines are too slow, some USB stacks flaky. People have
+  [reported success](https://github.com/rumpeltux/viomi-rooting/issues/7#issuecomment-691664493)
+  with a raspberry pi when their main computer didn’t work.
+* If you see a message like:
+
+      adb: insufficient permissions for device
+      See [http://developer.android.com/tools/device.html] for more information
+  Follow [the link](http://developer.android.com/tools/device.html) for advice, in particular
+  make sure that you are a member of the plugdev group and have setup correct udev rules
+  (`dmesg` would probably show you the device ids).
+* Finally, this may not be working on first attempt, but may need multiple tries,
+  but typically not more than 10.
+
 **Problem:** The script was not able to establish a ssh connection and didn't finish.
 
 Solution: Rerun the remaining steps of the script (replace `ROBOT_IP` with the actual ip address)
