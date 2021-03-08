@@ -6,7 +6,7 @@ This tool aims to automate the rooting process described in
 It is known to work with the following models:
 
 * Mijia STYJ02YM (viomi-v7)
-* Mijia STYTJ02YM (viomi-v8) (experimental, needs manual update of Valetudo)
+* Mijia STYTJ02YM (viomi-v8) (not tried yet)
 
 ## Prerequisites
 
