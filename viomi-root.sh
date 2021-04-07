@@ -113,9 +113,9 @@ function restore_robot_services() {
 
 function install_valetudo() {
   ip=$1
-  wget "https://github.com/Hypfer/Valetudo/releases/download/0.5.3/valetudo" -O valetudo
+  wget "https://github.com/Hypfer/Valetudo/releases/download/2021.03.0/valetudo-armv7" -O valetudo
   chmod +x valetudo
-  echo "da67cee5eca1c8c55eb891bfe7c050639f8658dd9096ac66a20ec1061763b29b  valetudo" > valetudo.sha256
+  echo "1c3e91b944fcbf80bb7508df3900059d851198a47fcd0abf6a439f1fda0086c4  valetudo" > valetudo.sha256
   sha256sum -c valetudo.sha256 || exit
   scp valetudo vacuum:/mnt/UDISK/
   ssh vacuum "cat >/etc/init.d/valetudo" <<EOF
@@ -129,6 +129,7 @@ OOM_ADJ=-17
 
 start_service() {
   procd_open_instance
+  procd_set_param env VALETUDO_CONFIG_PATH=/mnt/UDISK/valetudo_config.json
   procd_set_param oom_adj \$OOM_ADJ
   procd_set_param command \$PROG
   procd_set_param stdout 1 # forward stdout of the command to logd
@@ -140,27 +141,17 @@ shutdown() {
   echo shutdown
 }
 EOF
-  ssh vacuum "cat >/etc/rc.d/S51valetudo" <<EOF
-#!/bin/sh
-iptables         -F OUTPUT
-iptables  -t nat -F OUTPUT
-# for local development enter your local development host here
-# and change \$dest:80 to \$dest:8080
-dest=127.0.0.1
-for host in 110.43.0.83 110.43.0.85; do
-  iptables  -t nat -A OUTPUT -p tcp --dport 80   -d \$host -j DNAT --to-destination \$dest:80
-  iptables  -t nat -A OUTPUT -p udp --dport 8053 -d \$host -j DNAT --to-destination \$dest:8053
-  iptables         -A OUTPUT                     -d \$host/32  -j REJECT
-done
+  ssh vacuum <<\EOF
+sed -i 's/110.43.0.8./127.00.00.1/g' /usr/bin/miio_client
+for domain in "" de. ea. in. pv. ru. sg. st. tw. us.; do
+  echo "127.0.0.1 ${domain}ot.io.mi.com ${domain}ott.io.mi.com" >> /etc/hosts
+done;
+chmod +x /etc/init.d/valetudo;
+cd /etc/rc.d/;
+ln -s ../init.d/valetudo S97valetudo;
+reboot
 EOF
-  ssh vacuum '\
-    for domain in "" de. ea. in. pv. ru. sg. st. tw. us.; \
-    do \
-      echo "110.43.0.83 ${domain}ot.io.mi.com ${domain}ott.io.mi.com" >> /etc/hosts; \
-    done; \
-    chmod +x /etc/rc.d/S51valetudo /etc/init.d/valetudo; \
-    cd /etc/rc.d/; \
-    ln -s ../init.d/valetudo S97valetudo'
+echo "Robot is restarting, you should be able to reach Valetudo at http://$ip once restarted"
 }
 
 function get_robot_ip() {
