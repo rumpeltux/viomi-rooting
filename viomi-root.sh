@@ -19,6 +19,39 @@ Press [Enter] to continue
 EOT
   read
 
+  echo "Checking if SSH is already configured and working"
+  if ssh -o ConnectTimeout=5 -q vacuum exit
+  then
+      read -p "It appear that ssh has already been configured, would you like to skip adb connection and ssh activation? (y/n) " -n 1 -r
+      if [[ ! $REPLY =~ ^[Nn]$ ]]
+      then
+        echo "SSH configuration skipped";
+      else
+        echo "Rerunning ssh installation"
+        connect_adb_and_install_dropbear
+      fi
+  else
+    echo "SSH not configured"
+    connect_adb_and_install_dropbear
+  fi
+
+  if ssh vacuum "test -f /etc/rc.d/S90robotManager"
+  then
+    echo "Robot service already restored, skipping"
+  else
+    echo "Restoring robot services."
+    restore_robot_services
+  fi
+
+  read -p "Would you like to install Valetudo (open-source cloudless vacuum robot UI)? (y/n) " -n 1 -r
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+      return
+  fi
+  install_valetudo
+}
+
+function connect_adb_and_install_dropbear() {
   echo "We'll now try to connect to the ADB shell. Please connect the USB cable to your computer."
   echo "If you hear the Robot voice ('kaichi'), wait another two seconds and unplug and reconnect the cable."
   echo "If nothing happens try replugging the USB cable. This may take 10 or more attempts."
@@ -29,7 +62,7 @@ EOT
   echo "Please replug the USB cable again. Do not unplug once you hear the sound."
   wait_for_adb_shell
   echo "Shell is present."
-  
+
   # TODO: figure out when the robot is connected to wifi
   echo -n "Waiting a bit to allow the robot to connect to wifi..."
   for i in $(seq 10); do
@@ -41,22 +74,6 @@ EOT
   echo "Robot IP is $ip"
   install_dropbear "$ip"
   echo "SSH was installed."
-  
-  # Give dropbear a bit time to start, before we try to connect in the next step.
-  sleep 2
-
-  echo 'Please change the root password now. The default one is typically "@3I#sc$RD%xm^2S&".'
-  ssh vacuum "passwd"
-
-  echo "Restoring robot services."
-  restore_robot_services
-
-  read -p "Would you like to install Valetudo (open-source cloudless vacuum robot UI)? (y/n) " -n 1 -r
-  if [[ ! $REPLY =~ ^[Yy]$ ]]
-  then
-      return
-  fi
-  install_valetudo "$ip"
 }
 
 function fix_adb_shell() {
@@ -102,6 +119,14 @@ Host vacuum
   Hostname $ip
   User root
 EOF
+  # Give dropbear a bit time to start, before we try to connect in the next step.
+  # TODO replace this with a while loop, testing ssh connection with "ssh -q vacuum exit"
+  echo "Waiting 5 seconds for ssh server dropbear to start"
+  sleep 5
+
+  echo 'Please change the root password now. The default one is typically "@3I#sc$RD%xm^2S&".'
+  # TODO find a way to check if the password was already changed, maybe by checking root entry in cat /etc/shadow
+  ssh vacuum "passwd"
 }
 
 function restore_robot_services() {
@@ -112,7 +137,6 @@ function restore_robot_services() {
 }
 
 function install_valetudo() {
-  ip=$1
   wget "https://github.com/Hypfer/Valetudo/releases/download/2021.03.0/valetudo-armv7" -O valetudo
   chmod +x valetudo
   echo "1c3e91b944fcbf80bb7508df3900059d851198a47fcd0abf6a439f1fda0086c4  valetudo" > valetudo.sha256
@@ -151,6 +175,8 @@ cd /etc/rc.d/;
 ln -s ../init.d/valetudo S97valetudo;
 reboot
 EOF
+#Get the ip of the robot from the ssh config file
+ip=$(ssh -G vacuum | awk '$1 == "hostname" { print $2 }')
 echo "Robot is restarting, you should be able to reach Valetudo at http://$ip once restarted"
 }
 
