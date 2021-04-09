@@ -55,4 +55,4 @@ Solution: Rerun the remaining steps of the script (replace `ROBOT_IP` with the a
 
     ./viomi-root.sh change_password
     ./viomi-root.sh restore_robot_services
-    ./viomi-root.sh install_valetudo ROBOT_IP
+    ./viomi-root.sh install_valetudo
