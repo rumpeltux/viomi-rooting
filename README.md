@@ -22,7 +22,7 @@ It is known to work with the following models:
 
 You may need to install these packages, e.g. for Ubuntu:
 
-    adb install android-tools-adb wget coreutils
+    apt install android-tools-adb wget coreutils
 
 ### Mac setup
 
