@@ -4,10 +4,10 @@ function main() {
   [ -d "$HOME/.ssh" ] || (echo "~/.ssh does not exist, trying to create it."; mkdir -p "$HOME/.ssh" || exit)
   echo -n >> "$HOME/.ssh/config" || (echo "Cannot edit ~/.ssh/config."; exit)
   [ -e "$HOME/.ssh/id_rsa.pub" ] || (echo "You don't seem to have an ssh key, generating one."; ssh-keygen || exit)
-  for tool in sha256sum ssh; do
+  for tool in adb awk sha256sum ssh wget; do
     which $tool > /dev/null || (echo "Please install $tool."; exit)
   done
-  
+
   # TODO attempt to continue where we left off in case of failures
   cat <<EOT
 Starting viomi rooting procedure. Please make sure of the following before starting:
