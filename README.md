@@ -42,6 +42,12 @@ Clone this repository, then run the following command and follow its instruction
 
     ./viomi-root.sh
 
+Note: For newer viomi-v8 models, above will not work, but you can try the
+following experimental procedure based on
+[findings by @Dropaq](https://github.com/rumpeltux/python-miio/issues/1#issuecomment-915647117):
+
+    NEW_V8=1 ./viomi-root.sh
+
 ## What’s the script doing?
 
 1. Enable the `adb shell` command.

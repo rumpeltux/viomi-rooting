@@ -35,12 +35,14 @@ EOT
     connect_adb_and_install_dropbear
   fi
 
-  if ssh vacuum "test -f /etc/rc.d/S90robotManager"
-  then
-    echo "Robot service already restored, skipping"
-  else
-    echo "Restoring robot services."
-    restore_robot_services
+  if [ -z "$NEW_V8" ]; then
+    if ssh vacuum "test -f /etc/rc.d/S90robotManager"
+    then
+      echo "Robot service already restored, skipping"
+    else
+      echo "Restoring robot services."
+      restore_robot_services
+    fi
   fi
 
   read -p "Would you like to install Valetudo (open-source cloudless vacuum robot UI)? (y/n) " -n 1 -r
@@ -52,14 +54,34 @@ EOT
 }
 
 function connect_adb_and_install_dropbear() {
-  echo "We'll now try to connect to the ADB shell. Please connect the USB cable to your computer."
-  echo "If you hear the Robot voice ('kaichi'), wait another two seconds and unplug and reconnect the cable."
-  echo "If nothing happens try replugging the USB cable. This may take 10 or more attempts."
+  if [ -z "$NEW_V8" ]; then
+    echo "We'll now try to connect to the ADB shell. Please connect the USB cable to your computer."
+    echo "If you hear the Robot voice ('kaichi'), wait another two seconds and unplug and reconnect the cable."
+    echo "If nothing happens try replugging the USB cable. This may take 10 or more attempts."
+  else
+    cat <<EOT
+We'll now try to connect to the ADB shell for new viomi-v8 models (experimental).
+* Long press the power key for at least 10 seconds to power off the device
+* Keep USB connected to the robot, but not to the PC
+* Press the "Home" key and do not release it.
+* Connect the USB to the PC
+* Click power key for about 10-11 times
+* Release both keys
+* Robot should boot into FEL mode, and start the ADB.
+  The robot confirms by saying "device connected", "setup completed".
+  If it says "turning on", try again.
+EOT
+    read -p 'Press ENTER once ADB setup is completed.'
+  fi
+
   fix_adb_shell
   echo "Shell fixed..."
-  persist_adb_shell
+  
+  if [ -z "$NEW_V8" ]; then
+    persist_adb_shell
 
-  echo "Please replug the USB cable again. Do not unplug once you hear the sound."
+    echo "Please replug the USB cable again. Do not unplug once you hear the sound."
+  fi
   wait_for_adb_shell
   echo "Shell is present."
 
@@ -76,6 +98,17 @@ function connect_adb_and_install_dropbear() {
   echo "SSH was installed."
 }
 
+function adb_loop() {
+   if [ -z "$NEW_V8" ]; then
+    while true; do
+      adb $@ | grep -v "no devices/emulators found" && break
+    done
+  else
+    # newer viomi-v8 revisions don’t kill the adb script, so we don’t need a loop
+    adb $@
+  fi
+}
+
 function fix_adb_shell() {
   cat >adb_shell <<"EOF"
 #!/bin/sh
@@ -83,15 +116,11 @@ export ENV='/etc/adb_profile'
 exec /bin/sh "$@"
 EOF
   chmod +x adb_shell
-  while true; do
-    adb push -a adb_shell /bin/adb_shell | grep -v "no devices/emulators found" && break
-  done
+  adb_loop push -a adb_shell /bin/adb_shell
 }
 
 function persist_adb_shell() {
-  while true; do
-    adb shell rm /etc/rc.d/S90robotManager | grep -v "no devices/emulators found" && break
-  done
+  adb_loop shell rm /etc/rc.d/S90robotManager
 }
 
 function wait_for_adb_shell() {
