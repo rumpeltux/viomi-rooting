@@ -82,3 +82,17 @@ Solution: Rerun the remaining steps of the script
     ./viomi-root.sh change_password
     ./viomi-root.sh restore_robot_services
     ./viomi-root.sh install_valetudo
+
+**Problem:** The robot appears dead, but SSH or ADB are working.
+
+Solution (does not apply to newer viomi-v8 models):
+
+* When SSH is working:
+
+      ./viomi-root.sh restore_robot_services
+    
+* When ADB is working:
+
+      adb shell
+      cd /etc/rc.d
+      ln -s ../init.d/robotManager S90robotManager
