@@ -10,11 +10,31 @@ It is known to work with the following models:
 
 ## Prerequisites
 
-* a linux machine with `bash`, `ssh`, `wget`, `adb` and `sha256sum`
+* a linux (Mac, raspberry pi or OpenWRT router may also work) machine with
+  `bash`, `ssh`, `wget`, `adb` and `sha256sum`
 * the robot is already connected to your wifi (if you don't want to use the xiaomi app to do this,
   you can do this with [python-miio](https://github.com/rytilahti/python-miio)
 * the linux machine needs to be on the same network as the robot
-* a micro-USB cable plugged into the [robot’s micro-USB port](https://itooktheredpill.irgendwo.org/2020/rooting-xiaomi-vacuum-robot/).
+* a good micro-USB cable (with data support) plugged into the
+  [robot’s micro-USB port](https://itooktheredpill.irgendwo.org/2020/rooting-xiaomi-vacuum-robot/).
+
+### Linux setup
+
+You may need to install these packages, e.g. for Ubuntu:
+
+    adb install android-tools-adb wget coreutils
+
+### Mac setup
+
+On Mac, install `adb` and `sha256sum` as follows:
+
+```shell
+# Package for adb
+brew install android-platform-tools
+
+# Package for sha256sum
+brew install coreutils
+```
 
 ## Usage instructions
 
