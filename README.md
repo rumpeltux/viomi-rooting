@@ -77,7 +77,7 @@ following experimental procedure based on
 
 **Problem:** The script was not able to establish a ssh connection and didn't finish.
 
-Solution: Rerun the remaining steps of the script (replace `ROBOT_IP` with the actual ip address)
+Solution: Rerun the remaining steps of the script
 
     ./viomi-root.sh change_password
     ./viomi-root.sh restore_robot_services
