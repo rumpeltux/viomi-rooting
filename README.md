@@ -96,3 +96,24 @@ Solution (does not apply to newer viomi-v8 models):
       adb shell
       cd /etc/rc.d
       ln -s ../init.d/robotManager S90robotManager
+
+**Problem:** I accidentally resetted the wifi settings (Robot already rooted!).
+
+Solution:
+1. Please connect to your robot using:
+```adb shell```
+2. Edit the `/etc/wifi/wpa_supplicant.conf` file using, e.g. vim:
+```vim /etc/wifi/wpa_supplicant.conf```
+3. and add these lines at the end of the file:
+```
+network={
+        ssid="SSIDGOESHERE"
+        psk="PASSWORDHERE"
+}
+```
+4. reboot the device
+``` reboot```
+5. reconnect using `adb shell` and check if your robot received an ip address.
+``` ip a ```
+6. Try to connect over ssh from your computer, and change your .ssh/config file accordingly 
+``` ssh root@robotIP OR ssh vacuum```
