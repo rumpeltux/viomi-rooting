@@ -57,7 +57,7 @@ following experimental procedure based on
 
 ## Troubleshooting
 
-**Problem:** No adb connection is established.
+### No adb connection is established.
 
 * Check that adb and your cable is working in general by connecting to an android phone
   (enable usb debugging on it), e.g. by using adb shell.
@@ -75,7 +75,7 @@ following experimental procedure based on
 * Finally, this may not be working on first attempt, but may need multiple tries,
   but typically not more than 10.
 
-**Problem:** The script was not able to establish a ssh connection and didn't finish.
+### The script was not able to establish a ssh connection and didn't finish.
 
 Solution: Rerun the remaining steps of the script
 
@@ -83,7 +83,7 @@ Solution: Rerun the remaining steps of the script
     ./viomi-root.sh restore_robot_services
     ./viomi-root.sh install_valetudo
 
-**Problem:** The robot appears dead, but SSH or ADB are working.
+### The robot appears dead, but SSH or ADB are working.
 
 Solution (does not apply to newer viomi-v8 models):
 
@@ -97,23 +97,22 @@ Solution (does not apply to newer viomi-v8 models):
       cd /etc/rc.d
       ln -s ../init.d/robotManager S90robotManager
 
-**Problem:** I accidentally resetted the wifi settings (Robot already rooted!).
+### I accidentally resetted the wifi settings (Robot already rooted!).
 
 Solution:
-1. Please connect to your robot using:
-```adb shell```
-2. Edit the `/etc/wifi/wpa_supplicant.conf` file using, e.g. vim:
-```vim /etc/wifi/wpa_supplicant.conf```
-3. and add these lines at the end of the file:
-```
-network={
+1.  Please connect to your robot using: `adb shell`
+2.  Edit the `/etc/wifi/wpa_supplicant.conf` file using, e.g. vim:
+   ```
+   vim /etc/wifi/wpa_supplicant.conf
+   ```
+3.  Add these lines at the end of the file:
+    ```
+    network={
         ssid="SSIDGOESHERE"
         psk="PASSWORDHERE"
-}
-```
-4. reboot the device
-``` reboot```
-5. reconnect using `adb shell` and check if your robot received an ip address.
-``` ip a ```
-6. Try to connect over ssh from your computer, and change your .ssh/config file accordingly 
-``` ssh root@robotIP OR ssh vacuum```
+    }
+    ```
+4.  Reboot the device: `reboot`
+5.  Check if your robot received an ip address: `adb shell ip a`
+6.  Try to connect over ssh from your computer, and change your `.ssh/config` file
+    accordingly `ssh root@robotIP` or `ssh vacuum`
