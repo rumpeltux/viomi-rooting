@@ -1,9 +1,9 @@
 #!/bin/bash
 
 function main() {
-  [ -d "$HOME/.ssh" ] || (echo "~/.ssh does not exist, trying to create it."; mkdir -p "$HOME/.ssh" || exit)
-  echo -n >> "$HOME/.ssh/config" || (echo "Cannot edit ~/.ssh/config."; exit)
-  [ -e "$HOME/.ssh/id_rsa.pub" ] || (echo "You don't seem to have an ssh key, generating one."; ssh-keygen || exit)
+  [ -d "$HOME/.ssh" ] || { echo "~/.ssh does not exist, trying to create it."; mkdir -p "$HOME/.ssh" || exit; }
+  echo -n >> "$HOME/.ssh/config" || { echo "Cannot edit ~/.ssh/config."; exit; }
+  [ -e "$HOME/.ssh/id_rsa.pub" ] || { echo "You don't seem to have an ssh key, generating one."; ssh-keygen || exit; }
   for tool in adb awk sha256sum ssh wget; do
     which $tool > /dev/null || (echo "Please install $tool."; exit)
   done
@@ -93,6 +93,15 @@ EOT
   echo
 
   ip=$(get_robot_ip)
+  [ -z "$ip" ] && {
+    echo "Could not determine robot IP. Was its WIFI properly configured?"
+    echo "Skipping dropbear installation, to continue run the following manually:"
+    echo "  $0 install_dropbear ROBOT_IP_ADDRESS"
+    echo "  $0 restore_robot_services"
+    echo "  $0 install_valetudo"
+    exit
+  }
+
   echo "Robot IP is $ip"
   install_dropbear "$ip"
   echo "SSH was installed."
