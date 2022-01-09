@@ -46,6 +46,8 @@ EOT
       restore_robot_services
     fi
   fi
+  
+  date_reset_workaround
 
   read -p "Would you like to install Valetudo (open-source cloudless vacuum robot UI)? (y/n) " -n 1 -r
   if [[ ! $REPLY =~ ^[Yy]$ ]]
@@ -174,6 +176,18 @@ function restore_robot_services() {
   echo "Your device is now rooted."
   # And to celebrate:
   ssh vacuum "tinyplayer /usr/share/audio/english/sound_test_ready.mp3"
+}
+
+function date_reset_workaround() {
+  # Some process seems to reset datetime after boot. Workaround per:
+  # https://github.com/rumpeltux/viomi-rooting/issues/41
+  ssh vacuum "cat > /usr/sbin/date; chmod +x /usr/sbin/date" <<"EOF"
+/bin/date -u -s "$2"
+sleep 2
+/bin/date -u -s "$2"
+sleep 2
+/bin/date -u -s "$2"
+EOF
 }
 
 function install_valetudo() {
