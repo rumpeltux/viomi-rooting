@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Define ADB serial value to access it
+ADB_ARG="${ADB_ARG:-}"
+
 function main() {
   [ -d "$HOME/.ssh" ] || { echo "~/.ssh does not exist, trying to create it."; mkdir -p "$HOME/.ssh" || exit; }
   echo -n >> "$HOME/.ssh/config" || { echo "Cannot edit ~/.ssh/config."; exit; }
@@ -138,7 +141,7 @@ function persist_adb_shell() {
 
 function wait_for_adb_shell() {
   while true; do
-    adb shell echo shell_is_ready | grep -v "no devices/emulators found" | grep "shell_is_ready" && break
+    adb shell $ADB_ARG echo shell_is_ready | grep -v "no devices/emulators found" | grep "shell_is_ready" && break
   done
 }
 
@@ -149,11 +152,11 @@ function install_dropbear() {
   echo "6d21911b91505fd781dc2c2ad1920dfbb72132d7adb614cc5d2fb1cc5e29c8de  $filename" > dropbear.sha256
   sha256sum -c dropbear.sha256 || exit
   adb push $filename /tmp
-  adb shell opkg install /tmp/$filename
+  adb shell $ADB_ARG opkg install /tmp/$filename
   adb push ~/.ssh/id_rsa.pub /etc/dropbear/authorized_keys
-  adb shell chmod 0600 /etc/dropbear/authorized_keys
-  adb shell "sed -i \"/PasswordAuth/ s/'on'/'off'/\" /etc/config/dropbear"
-  adb shell /etc/init.d/dropbear start
+  adb shell $ADB_ARG chmod 0600 /etc/dropbear/authorized_keys
+  adb shell $ADB_ARG "sed -i \"/PasswordAuth/ s/'on'/'off'/\" /etc/config/dropbear"
+  adb shell $ADB_ARG /etc/init.d/dropbear start
   echo "Setting local ssh alias vacuum to root@$ip."
   echo "You can use 'ssh vacuum' to connect to the robot from now on."
   cat >> "$HOME/.ssh/config" <<EOF
@@ -235,7 +238,7 @@ echo "Robot is restarting, you should be able to reach Valetudo at http://$ip on
 }
 
 function get_robot_ip() {
-  adb shell ifconfig wlan0 | awk '/inet addr/{print substr($2,6)}'
+  adb shell $ADB_ARG ifconfig wlan0 | awk '/inet addr/{print substr($2,6)}'
 }
 
 mkdir -p /tmp/viomi-root
