@@ -13,7 +13,7 @@ It is known to work with the following models:
 * a linux (Mac, raspberry pi or OpenWRT router may also work) machine with
   `bash`, `ssh`, `wget`, `adb` and `sha256sum`
 * the robot is already connected to your wifi (if you don't want to use the xiaomi app to do this,
-  you can do this with [python-miio](https://github.com/rytilahti/python-miio)
+  you can do this with [python-miio](https://github.com/rytilahti/python-miio))
 * the linux machine needs to be on the same network as the robot
 * a good micro-USB cable (with data support) plugged into the
   [robot’s micro-USB port](https://itooktheredpill.irgendwo.org/2020/rooting-xiaomi-vacuum-robot/).
