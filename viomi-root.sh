@@ -5,7 +5,7 @@ function main() {
   echo -n >> "$HOME/.ssh/config" || { echo "Cannot edit ~/.ssh/config."; exit; }
   while [ ! -e "$HOME/.ssh/id_rsa.pub" ]; do
     echo "You don't seem to have an ssh key, generating one.";
-    ssh-keygen -f "$HOME/.ssh/id_rsa.pub" || exit;
+    ssh-keygen -f "$HOME/.ssh/id_rsa" || exit;
   done
   for tool in adb awk sha256sum ssh wget; do
     which $tool > /dev/null || (echo "Please install $tool."; exit)
