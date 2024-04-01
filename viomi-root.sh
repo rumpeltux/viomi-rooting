@@ -194,11 +194,12 @@ EOF
 }
 
 function install_valetudo() {
+  # need to download locally, since the robot doesn't support SSL
   wget "https://github.com/Hypfer/Valetudo/releases/download/2022.05.1/valetudo-armv7" -O valetudo
-  chmod +x valetudo
   echo "cdc1930895bac90f10ce20ebdb26df902785ef15f9ee911b0e071e7439e2ee9d  valetudo" > valetudo.sha256
   sha256sum -c valetudo.sha256 || exit
-  scp valetudo vacuum:/mnt/UDISK/
+  # not using scp, since this doesn't work for everyone (https://github.com/rumpeltux/viomi-rooting/issues/47)
+  ssh vacuum "cd /mnt/UDISK/; cat > valetudo; chmod 755 valetudo" < valetudo
   ssh vacuum "cat >/etc/init.d/valetudo" <<EOF
 #!/bin/sh /etc/rc.common
 START=97
