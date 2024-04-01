@@ -79,9 +79,12 @@ following experimental procedure based on
 
 Solution: Rerun the remaining steps of the script
 
-    ./viomi-root.sh change_password
+    ssh vacuum "passwd"  # change the password
     ./viomi-root.sh restore_robot_services
     ./viomi-root.sh install_valetudo
+
+If `ssh -vvv vacuum` gives you this error: `debug1: send_pubkey_test: no mutual signature algorithm`,
+add the option `PubkeyAcceptedKeyTypes=ssh-rsa` to your local `.ssh/config` (see #42).
 
 ### The robot appears dead, but SSH or ADB are working.
 
