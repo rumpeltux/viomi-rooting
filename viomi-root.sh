@@ -196,7 +196,7 @@ EOF
 function install_valetudo() {
   wget "https://github.com/Hypfer/Valetudo/releases/download/2022.05.1/valetudo-armv7" -O valetudo
   chmod +x valetudo
-  echo "1c3e91b944fcbf80bb7508df3900059d851198a47fcd0abf6a439f1fda0086c4  valetudo" > valetudo.sha256
+  echo "cdc1930895bac90f10ce20ebdb26df902785ef15f9ee911b0e071e7439e2ee9d  valetudo" > valetudo.sha256
   sha256sum -c valetudo.sha256 || exit
   scp valetudo vacuum:/mnt/UDISK/
   ssh vacuum "cat >/etc/init.d/valetudo" <<EOF
