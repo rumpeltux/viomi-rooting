@@ -8,7 +8,7 @@ function main() {
   echo -n >> "$HOME/.ssh/config" || { echo "Cannot edit ~/.ssh/config."; exit; }
   while [ ! -e "$HOME/.ssh/id_rsa.pub" ]; do
     echo "You don't seem to have an ssh key, generating one.";
-    ssh-keygen -f "$HOME/.ssh/id_rsa" || exit;
+    ssh-keygen -t rsa -f "$HOME/.ssh/id_rsa" || exit;
   done
   for tool in adb awk sha256sum ssh wget; do
     which $tool > /dev/null || (echo "Please install $tool."; exit)
@@ -163,6 +163,8 @@ function install_dropbear() {
 Host vacuum
   Hostname $ip
   User root
+  PubkeyAcceptedAlgorithms +ssh-rsa
+  HostkeyAlgorithms +ssh-rsa
 EOF
   # Give dropbear a bit time to start, before we try to connect in the next step.
   # TODO replace this with a while loop, testing ssh connection with "ssh -q vacuum exit"
